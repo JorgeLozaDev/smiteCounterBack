@@ -30,7 +30,7 @@ const godSchema = new mongoose.Schema({
   role: {
     type: String,
     required: true,
-    enum: ["Guardián", "Jungla", "ADC", "Mid", "Support"],
+    enum: ["Guardián", "Guerrero", "Cazador", "Mago", "Asesino"],
   },
   lore: {
     type: String,
@@ -54,12 +54,12 @@ const godSchema = new mongoose.Schema({
           },
           value: {
             type: String,
-            required: true,
+            required: false,
           },
         },
       ],
     },
-  ],
+  ], 
   images: {
     main: {
       type: String,
@@ -73,11 +73,11 @@ const godSchema = new mongoose.Schema({
       {
         name: {
           type: String,
-          required: true,
+          required: false,
         },
         image: {
           type: String,
-          required: true,
+          required: false,
         },
       },
     ],
@@ -86,7 +86,7 @@ const godSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
-  isNew: {
+  isNewGod: {
     type: Boolean,
     default: false,
   },
@@ -94,6 +94,10 @@ const godSchema = new mongoose.Schema({
     type: Boolean,
     default: false, // Puedes ajustar el valor predeterminado según tus necesidades
   },
+},
+{
+  versionKey: false,
+  timestamps: true,
 });
 
 const God = mongoose.model("God", godSchema);

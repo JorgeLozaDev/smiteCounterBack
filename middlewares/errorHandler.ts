@@ -1,6 +1,5 @@
-import { Request, Response, NextFunction } from "express";
-
 // Definir una interfaz personalizada para los errores
+import { Request, Response, NextFunction } from "express";
 interface CustomError extends Error {
   status?: number;
   errors?: any;
