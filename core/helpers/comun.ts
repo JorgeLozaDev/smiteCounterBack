@@ -26,3 +26,22 @@ export const validateRequiredFields = (data, requiredFields) => {
     }
   }
 };
+
+export const validateDateAndAge = (dateString: string): Date | null => {
+  if (dateString && dateString.trim() !== "") {
+    const userBirthday = new Date(dateString);
+    const today = new Date();
+
+    const age = today.getFullYear() - userBirthday.getFullYear();
+    if (age < 12) {
+      const error = new Error("Debes tener al menos 16 años para registrarte");
+      (error as any).status = 400;
+      throw error;
+    }
+
+    // Si la fecha y la edad son válidas, devolver la fecha
+    return userBirthday;
+  }
+
+  return null; // Devolver null si no se proporciona una fecha
+};
