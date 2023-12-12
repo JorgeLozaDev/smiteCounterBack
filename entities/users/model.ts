@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema({
   },
   birthday: {
     type: Date,
-    required: false,
+    required: true,
   },
   favoriteGods: [
     {

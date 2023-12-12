@@ -4,6 +4,6 @@ import { singIn } from "./controller";
 
 const router = express.Router();
 
-router.post("/addUser", singIn);
+router.post("/addUser", singIn); 
 
-export = router;
+export default router;
