@@ -58,3 +58,44 @@ export const singIn = async (
     next(error);
   }
 };
+
+
+export const loginUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { email, password } = req.body;
+
+    // Buscar al usuario por nombre de usuario
+    const user = await User.findOne({ email }).select("+password");
+
+    if (!user) {
+      // Lanza un error con un código de estado HTTP personalizado
+      const error = new Error("El usuario no existe");
+      (error as any).status = 404;
+      throw error;
+    }
+
+    // Verificar la contraseña
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      // Lanza un error con un código de estado HTTP personalizado
+      const error = new Error("Usuario o contraseña incorrectas");
+      (error as any).status = 409;
+      throw error;
+    }
+
+    // Generar y firmar un token JWT
+    const token = jwt.sign(
+      { id: user._id, username: user.username, role: user.role },
+      CONF.JWT_SECRET,
+      { expiresIn: "24h" }
+    );
+
+    res.status(200).json({ token });
+  } catch (error) {
+    next(error);
+  }
+};
