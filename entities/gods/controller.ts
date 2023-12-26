@@ -61,3 +61,22 @@ export const addGod = async (
     next(error);
   }
 };
+
+// Controlador para obtener todos los tatuadores
+export const getAllActiveGods = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    // Obtener todos los usuarios con rol de tatuador
+    const allGodsActive = await God.find({ isActive: "true" })
+      .select("name pantheon role images")
+      .sort({ name: 1 })
+      .exec();
+
+    res.status(200).json({ allGodsActive });
+  } catch (error) {
+    next(error);
+  }
+};

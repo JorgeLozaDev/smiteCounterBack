@@ -161,9 +161,19 @@ export const updateProfile = async (
 
     const userBirthday = validateDateAndAge(birthday);
 
-    userFound.birthday = userBirthday;
+    // userFound.birthday = userBirthday;
     // Actualiza los datos personales del usuario
-  
+    if (userBirthday !== null) {
+      userFound.birthday = userBirthday;
+
+      // Resto del código...
+    } else {
+      // Manejar el caso en que la fecha no es válida
+      const error = new Error("Fecha de cumpleaños no válida");
+      (error as any).status = 400; // Código de estado 400 Bad Request
+      throw error;
+    }
+
     userFound.username = username;
     // Si la contraseña cambia, puedes volver a generar el token
     if (password && password.trim() != "") {
