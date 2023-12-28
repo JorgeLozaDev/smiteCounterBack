@@ -80,3 +80,39 @@ export const getAllActiveGods = async (
     next(error);
   }
 };
+
+export const filterAllActiveGods = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    // Obtener parámetros opcionales de la solicitud
+    const { pantheon, role, godName } = req.query;
+
+    // Crear un objeto de filtro basado en los parámetros proporcionados
+    const filter: any = { isActive: true };
+
+    if (pantheon) {
+      filter.pantheon = pantheon;
+    }
+
+    if (role) {
+      filter.role = role;
+    }
+
+    if (godName) {
+      filter.name = { $regex: new RegExp(godName as string, "i") };
+    }
+
+    // Realizar la consulta a la base de datos
+    const allGodsActive = await God.find(filter)
+      .select("name pantheon role images")
+      .sort({ name: 1 })
+      .exec();
+
+    res.status(200).json({ allGodsActive });
+  } catch (error) {
+    next(error);
+  }
+};
