@@ -115,3 +115,23 @@ export const filterAllActiveGods = async (
     next(error);
   }
 };
+
+export const getGodDetails = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const godId = req.params.id;
+
+    const godDetails = await God.findById(godId);
+
+    if (!godDetails) {
+      return res.status(404).json({ message: "Dios no encontrado" });
+    }
+
+    res.status(200).json({ godDetails });
+  } catch (error) {
+    next(error);
+  }
+};
