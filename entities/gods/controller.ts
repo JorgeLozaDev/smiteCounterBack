@@ -88,8 +88,7 @@ export const filterAllActiveGods = async (
 ) => {
   try {
     // Obtener parámetros opcionales de la solicitud
-    const { pantheon, role, godName } = req.query;
-
+    const { pantheon, role, godName } = req.body;
     // Crear un objeto de filtro basado en los parámetros proporcionados
     const filter: any = { isActive: true };
 

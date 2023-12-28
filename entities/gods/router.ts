@@ -5,6 +5,6 @@ const router = express.Router();
 
 router.post("/addGod", addGod);
 router.get("/allGodsActive", getAllActiveGods);
-router.get("/filterGodsActive", filterAllActiveGods);
+router.post("/filterGodsActive", filterAllActiveGods);
 
 export = router;
