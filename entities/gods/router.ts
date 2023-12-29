@@ -7,6 +7,7 @@ import {
   getAllActiveGods,
   getAllGods,
   getGodDetails,
+  updateGodActive,
 } from "./controller";
 const router = express.Router();
 
@@ -14,7 +15,8 @@ router.post("/addGod", addGod);
 router.post("/filterGodsActive", filterAllActiveGods);
 router.post("/createGod", authMiddleware, createGod);
 router.get("/allGodsActive", getAllActiveGods);
-router.get("/allGods",authMiddleware, getAllGods);
+router.get("/allGods", authMiddleware, getAllGods);
 router.get("/godDetails/:id", getGodDetails);
+router.put("/updateGodActive/:id", authMiddleware, updateGodActive);
 
 export = router;

@@ -89,13 +89,13 @@ export const getAllGods = async (
     const userRole = req.user.role; // Obtén el rol del usuario autenticado
     // Verificar si el usuario actual es el propietario es un admin
     if (userRole !== "admin") {
-      const error = new Error("No tienes permiso para modificar este perfil");
+      const error = new Error("No tienes permiso para ver esta información");
       (error as any).status = 403;
       throw error;
     }
     // Obtener todos los usuarios con rol de tatuador
     const allGods = await God.find({})
-      .select("name pantheon role")
+      .select("name pantheon role isActive")
       .sort({ name: 1 })
       .exec();
 
@@ -227,5 +227,39 @@ export const createGod = async (
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error del servidor" });
+  }
+};
+
+export const updateGodActive = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const userRole = req.user.role; // Obtén el rol del usuario autenticado
+  // Verificar si el usuario actual es el propietario es un admin
+  if (userRole !== "admin") {
+    const error = new Error("No tienes permiso para ver esta información");
+    (error as any).status = 403;
+    throw error;
+  }
+  const godId = req.params.id;
+  const newStatus = req.body.isActive; // Nuevo valor para el campo isActive
+  console.log(newStatus);
+
+  try {
+    // Actualizar el campo isDeleted a true en lugar de eliminar
+    const updatedGod = await God.findByIdAndUpdate(godId, {
+      isActive: newStatus,
+    });
+
+    if (!updatedGod) {
+      return res.status(404).json({ message: "Dios no encontrado" });
+    }
+
+    return res.status(200).json({ message: "Dios borrado exitosamente" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error interno del servidor", error });
   }
 };
