@@ -62,7 +62,6 @@ export const addGod = async (
   }
 };
 
-// Controlador para obtener todos los tatuadores
 export const getAllActiveGods = async (
   req: AuthenticatedRequest,
   res: Response,
@@ -76,6 +75,31 @@ export const getAllActiveGods = async (
       .exec();
 
     res.status(200).json({ allGodsActive });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAllGods = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userRole = req.user.role; // Obtén el rol del usuario autenticado
+    // Verificar si el usuario actual es el propietario es un admin
+    if (userRole !== "admin") {
+      const error = new Error("No tienes permiso para modificar este perfil");
+      (error as any).status = 403;
+      throw error;
+    }
+    // Obtener todos los usuarios con rol de tatuador
+    const allGods = await God.find({})
+      .select("name pantheon role")
+      .sort({ name: 1 })
+      .exec();
+
+    res.status(200).json({ allGods });
   } catch (error) {
     next(error);
   }
