@@ -135,3 +135,73 @@ export const getGodDetails = async (
     next(error);
   }
 };
+
+export const createGod = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userRole = req.user.role; // Obtén el rol del usuario autenticado
+
+    // Verificar si el usuario actual es el propietario es un admin
+    if (userRole !== "admin") {
+      const error = new Error("No tienes permiso para modificar este perfil");
+      (error as any).status = 403;
+      throw error;
+    }
+    // Define los campos requeridos
+    const camposRequeridos = [
+      "name",
+      "pantheon",
+      "role",
+      "lore",
+      "abilities",
+      "images",
+    ];
+
+    // Verificar campos requeridos utilizando la función de validación
+    validateRequiredFields(req.body, camposRequeridos);
+
+    const {
+      name,
+      pantheon,
+      role,
+      lore,
+      abilities,
+      images,
+      isActive,
+      isNewGod,
+      isFreeToPlay,
+    } = req.body;
+
+    // Verificar si el dios ya existe por el nombre
+    const existingGod = await God.findOne({ name });
+
+    if (existingGod) {
+      return res
+        .status(400)
+        .json({ error: "Ya existe un dios con ese nombre" });
+    }
+
+    // Crear un nuevo dios
+    const newGod = new God({
+      name,
+      pantheon,
+      role,
+      lore,
+      abilities,
+      images,
+      isActive: isActive || true,
+      isNewGod: isNewGod || false,
+      isFreeToPlay: isFreeToPlay || false,
+    });
+
+    await newGod.save();
+
+    res.json({ message: "Dios creado exitosamente", god: newGod });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error del servidor" });
+  }
+};
