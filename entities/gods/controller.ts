@@ -244,7 +244,6 @@ export const updateGodActive = async (
   }
   const godId = req.params.id;
   const newStatus = req.body.isActive; // Nuevo valor para el campo isActive
-  console.log(newStatus);
 
   try {
     // Actualizar el campo isDeleted a true en lugar de eliminar
@@ -258,6 +257,55 @@ export const updateGodActive = async (
 
     return res.status(200).json({ message: "Dios borrado exitosamente" });
   } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error interno del servidor", error });
+  }
+};
+
+export const updateGod = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const godId = req.params.id;
+  const userRole = req.user.role;
+
+  // Verificar si el usuario actual es el propietario o es un admin
+  if (userRole !== "admin") {
+    return res
+      .status(403)
+      .json({ message: "No tienes permiso para actualizar esta información" });
+  }
+
+  try {
+    // Encuentra el dios por ID
+    const godToUpdate = await God.findById(godId);
+
+    if (!godToUpdate) {
+      return res.status(404).json({ message: "Dios no encontrado" });
+    }
+
+    // Actualiza la información del dios con los nuevos datos
+    godToUpdate.name = req.body.name;
+    godToUpdate.pantheon = req.body.pantheon;
+    godToUpdate.role = req.body.role;
+    godToUpdate.lore = req.body.lore;
+    godToUpdate.abilities = req.body.abilities;
+    godToUpdate.images = req.body.images;
+    godToUpdate.isActive = req.body.isActive;
+    godToUpdate.isNewGod = req.body.isNewGod;
+    godToUpdate.isFreeToPlay = req.body.isFreeToPlay;
+
+    // Guarda los cambios en la base de datos
+    const updatedGod = await godToUpdate.save();
+
+    // Responde con el dios actualizado
+    return res
+      .status(200)
+      .json({ message: "Dios actualizado exitosamente", god: updatedGod });
+  } catch (error) {
+    // Maneja los errores
     return res
       .status(500)
       .json({ message: "Error interno del servidor", error });

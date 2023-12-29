@@ -7,6 +7,7 @@ import {
   getAllActiveGods,
   getAllGods,
   getGodDetails,
+  updateGod,
   updateGodActive,
 } from "./controller";
 const router = express.Router();
@@ -18,5 +19,6 @@ router.get("/allGodsActive", getAllActiveGods);
 router.get("/allGods", authMiddleware, getAllGods);
 router.get("/godDetails/:id", getGodDetails);
 router.put("/updateGodActive/:id", authMiddleware, updateGodActive);
+router.put("/updateGod/:id", authMiddleware, updateGod);
 
 export = router;
