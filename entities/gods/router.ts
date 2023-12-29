@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.post("/addGod", addGod);
 router.post("/filterGodsActive", filterAllActiveGods);
-router.post("/filterGodsActive", authMiddleware, createGod);
+router.post("/createGod", authMiddleware, createGod);
 router.get("/allGodsActive", getAllActiveGods);
 router.get("/godDetails/:id", getGodDetails);
 
