@@ -205,3 +205,46 @@ export const updateProfile = async (
     next(error);
   }
 };
+
+// LISTA COUNTER DIOSES
+
+export const saveListCounter = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userIdFromToken = req.user.id;
+    // Extraer los datos del cuerpo de la solicitud
+    const { listName, mainGod, counterpicks } = req.body;
+
+    // Obtener el usuario actual (puedes usar la autenticación del usuario)
+    const user = await User.findById(userIdFromToken);
+
+    if (!user) {
+      const error = new Error("Usuario no encontrado");
+      (error as any).status = 404;
+      throw error;
+    }
+
+    // Crear un nuevo objeto de lista
+    const newList = {
+      listName,
+      mainGod,
+      counterpicks,
+    };
+
+    // Agregar la nueva lista a las listas creadas por el usuario
+    user.createdLists.push(newList);
+
+    // Guardar los cambios en la base de datos
+    await user.save();
+
+    res.json({ success: true, message: "Lista guardada exitosamente." });
+  } catch (error) {
+    console.error("Error al guardar la lista:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error al guardar la lista." });
+  }
+};
