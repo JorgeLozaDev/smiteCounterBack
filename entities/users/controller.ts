@@ -208,12 +208,41 @@ export const updateProfile = async (
 
 // LISTA COUNTER DIOSES
 
+export const getAllCreatedListsCounters = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    // Obtiene el ID del usuario desde el token, si estás utilizando autenticación con tokens
+    const userId = req.user.id; // Ajusta según tu implementación de autenticación
+
+    // Busca al usuario en la base de datos por su ID
+    const user = await User.findById(userId).populate(
+      "createdLists.mainGod",
+      "name"
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    // Extrae las createdLists del usuario
+    const createdLists = user.createdLists;
+
+    res.status(200).json(createdLists);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error del servidor" });
+  }
+};
+
 export const saveListCounter = async (
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
-) => { 
-  try { 
+) => {
+  try {
     const userIdFromToken = req.user.id; // Obtén el ID del usuario autenticado desde el middleware
     // Extraer los datos del cuerpo de la solicitud
     const { listName, mainGod, counterpicks } = req.body;
