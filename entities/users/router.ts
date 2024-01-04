@@ -6,7 +6,7 @@ const router = express.Router();
  
 router.post("/addUser", singIn); 
 router.post("/login", loginUser);
-router.post("/saveListCounter", saveListCounter);
+router.post("/saveListCounter", authMiddleware, saveListCounter);
 router.get("/profile",authMiddleware, getProfile);
 router.put("/updateProfile", authMiddleware, updateProfile);
 

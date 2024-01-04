@@ -212,9 +212,9 @@ export const saveListCounter = async (
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
-) => {
-  try {
-    const userIdFromToken = req.user.id;
+) => { 
+  try { 
+    const userIdFromToken = req.user.id; // Obtén el ID del usuario autenticado desde el middleware
     // Extraer los datos del cuerpo de la solicitud
     const { listName, mainGod, counterpicks } = req.body;
 
