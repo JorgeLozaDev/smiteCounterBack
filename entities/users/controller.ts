@@ -214,23 +214,22 @@ export const getAllCreatedListsCounters = async (
   next: NextFunction
 ) => {
   try {
-    // Obtiene el ID del usuario desde el token, si estás utilizando autenticación con tokens
-    const userId = req.user.id; // Ajusta según tu implementación de autenticación
+    const userId = req.user.id;
 
-    // Busca al usuario en la base de datos por su ID
-    const user = await User.findById(userId).populate(
-      "createdLists.mainGod",
-      "name"
-    );
+    const user = await User.findById(userId);
 
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
 
-    // Extrae las createdLists del usuario
     const createdLists = user.createdLists;
 
-    res.status(200).json(createdLists);
+    const simplifiedLists = createdLists.map((list) => ({
+      listName: list.listName,
+      listId: list._id,
+    }));
+
+    res.status(200).json(simplifiedLists);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error del servidor" });
@@ -303,5 +302,3 @@ export const saveListCounter = async (
       .json({ success: false, message: "Error al guardar la lista." });
   }
 };
-
-
