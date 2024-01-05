@@ -64,6 +64,9 @@ const userSchema = new mongoose.Schema({
     },
   ],
   createdLists: [createdListSchema],
+},{
+  versionKey: false,
+  timestamps: true,
 });
 
 const User = mongoose.model("User", userSchema);

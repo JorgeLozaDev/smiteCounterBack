@@ -243,11 +243,9 @@ export const saveListCounter = async (
   next: NextFunction
 ) => {
   try {
-    const userIdFromToken = req.user.id; // Obtén el ID del usuario autenticado desde el middleware
-    // Extraer los datos del cuerpo de la solicitud
+    const userIdFromToken = req.user.id;
     const { listName, mainGod, counterpicks } = req.body;
 
-    // Obtener el usuario actual (puedes usar la autenticación del usuario)
     const user = await User.findById(userIdFromToken);
 
     if (!user) {
@@ -256,15 +254,43 @@ export const saveListCounter = async (
       throw error;
     }
 
-    // Crear un nuevo objeto de lista
-    const newList = {
-      listName,
-      mainGod,
-      counterpicks,
-    };
+    // Buscar si ya existe una lista con el mismo nombre
+    const existingListIndex = user.createdLists.findIndex(
+      (list) => list.listName === listName
+    );
 
-    // Agregar la nueva lista a las listas creadas por el usuario
-    user.createdLists.push(newList);
+    if (existingListIndex !== -1) {
+      // Si la lista ya existe, actualiza la información
+      const existingList = user.createdLists[existingListIndex];
+
+      // Encuentra el elemento en mainGods con el mismo godId
+      const existingGodIndex = existingList.mainGods.findIndex(
+        (god) => god.godId.toString() === mainGod.toString()
+      );
+
+      if (existingGodIndex !== -1) {
+        // Si el godId ya existe, actualiza los counterpicks
+        existingList.mainGods[existingGodIndex].counterpicks = counterpicks;
+      } else {
+        // Si el godId no existe, agrega un nuevo elemento a mainGods
+        existingList.mainGods.push({
+          godId: mainGod,
+          counterpicks,
+        });
+      }
+    } else {
+      // Si la lista no existe, crea una nueva lista y agrégala al usuario
+      const newList = {
+        listName,
+        mainGods: [
+          {
+            godId: mainGod,
+            counterpicks,
+          },
+        ],
+      };
+      user.createdLists.push(newList);
+    }
 
     // Guardar los cambios en la base de datos
     await user.save();
@@ -277,3 +303,5 @@ export const saveListCounter = async (
       .json({ success: false, message: "Error al guardar la lista." });
   }
 };
+
+
