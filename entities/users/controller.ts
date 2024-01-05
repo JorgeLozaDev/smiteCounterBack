@@ -378,3 +378,27 @@ export const getListById = async (
       .json({ success: false, message: "Error al obtener la lista." });
   }
 };
+
+// Eliminar una fila de la lista por godId
+export const deleteCounterGod = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { godId } = req.body;
+
+    // Verificar si el godId es válido (puedes agregar más validaciones según tus necesidades)
+    if (!godId) {
+      return res.status(400).json({ message: "El godId es obligatorio." });
+    }
+
+    // Eliminar la fila de la base de datos
+    await User.findOneAndDelete({ "mainGods.godId": godId });
+
+    res.status(200).json({ message: "Fila eliminada exitosamente." });
+  } catch (error) {
+    console.error("Error al eliminar la fila:", error);
+    res.status(500).json({ message: "Error interno del servidor." });
+  }
+};
