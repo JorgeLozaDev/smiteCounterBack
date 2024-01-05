@@ -331,3 +331,50 @@ export const deleteListCounter = async (
       .json({ success: false, message: "Error al eliminar la lista." });
   }
 };
+
+export const getListById = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userIdFromToken = req.user.id;
+    const listId = req.params.id;
+
+    // Busca al usuario
+    const user = await User.findById(userIdFromToken);
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    // Busca la lista en las listas creadas por el usuario
+    const list = user.createdLists.id(listId);
+
+    if (!list) {
+      return res.status(404).json({ message: "Lista no encontrada" });
+    }
+
+    // Extrae información relevante de la lista, incluyendo los counterpicks
+    const { listName, mainGods } = list.toObject();
+
+    // Mapea los counterpicks para incluir información adicional si es necesario
+    const mainGodsWithCounterpicks = mainGods.map((mainGod) => ({
+      godId: mainGod.godId,
+      counterpicks: mainGod.counterpicks.map((counterpick) => ({
+        godId: counterpick.godId,
+        description: counterpick.description,
+      })),
+    }));
+
+    res.json({
+      success: true,
+      list: { listName, mainGods: mainGodsWithCounterpicks },
+    });
+  } catch (error) {
+    console.error("Error al obtener la lista:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error al obtener la lista." });
+  }
+};

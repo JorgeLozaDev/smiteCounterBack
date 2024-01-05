@@ -3,6 +3,7 @@ import { authMiddleware } from "../../middlewares/authMiddleware";
 import {
   deleteListCounter,
   getAllCreatedListsCounters,
+  getListById,
   getProfile,
   loginUser,
   saveListCounter,
@@ -18,6 +19,7 @@ router.post("/saveListCounter", authMiddleware, saveListCounter);
 router.get("/getListCounter", authMiddleware, getAllCreatedListsCounters);
 router.get("/profile", authMiddleware, getProfile);
 router.put("/updateProfile", authMiddleware, updateProfile);
+router.get("/getList/:id", authMiddleware, getListById);
 router.delete("/deleteListCounter/:id", authMiddleware, deleteListCounter);
 
 export default router;
