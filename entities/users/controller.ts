@@ -302,3 +302,32 @@ export const saveListCounter = async (
       .json({ success: false, message: "Error al guardar la lista." });
   }
 };
+
+export const deleteListCounter = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userIdFromToken = req.user.id;
+    const listId = req.params.id;
+
+    // Busca al usuario y actualiza la lista eliminándola
+    const user = await User.findByIdAndUpdate(
+      userIdFromToken,
+      { $pull: { createdLists: { _id: listId } } },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    res.json({ success: true, message: "Lista eliminada exitosamente." });
+  } catch (error) {
+    console.error("Error al eliminar la lista:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error al eliminar la lista." });
+  }
+};

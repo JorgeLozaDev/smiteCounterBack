@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import { authMiddleware } from "../../middlewares/authMiddleware";
 import {
+  deleteListCounter,
   getAllCreatedListsCounters,
   getProfile,
   loginUser,
@@ -17,5 +18,6 @@ router.post("/saveListCounter", authMiddleware, saveListCounter);
 router.get("/getListCounter", authMiddleware, getAllCreatedListsCounters);
 router.get("/profile", authMiddleware, getProfile);
 router.put("/updateProfile", authMiddleware, updateProfile);
+router.delete("/deleteListCounter/:id", authMiddleware, deleteListCounter);
 
 export default router;
