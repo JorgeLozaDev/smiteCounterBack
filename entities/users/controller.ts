@@ -387,16 +387,26 @@ export const deleteCounterGod = async (
 ) => {
   try {
     const { godId } = req.body;
+    console.log(godId);
 
     // Verificar si el godId es válido (puedes agregar más validaciones según tus necesidades)
     if (!godId) {
       return res.status(400).json({ message: "El godId es obligatorio." });
     }
 
-    // Eliminar la fila de la base de datos
-    await User.findOneAndDelete({ "mainGods.godId": godId });
+  // Eliminar el subdocumento de la lista
+  const result = await User.updateOne(
+    { "createdLists.mainGods.godId": godId },
+    { $pull: { "createdLists.$.mainGods": { godId } } }
+  );
 
-    res.status(200).json({ message: "Fila eliminada exitosamente." });
+    if (result.modifiedCount > 0) {
+      res.status(200).json({ message: "Fila eliminada exitosamente." });
+    } else {
+      res
+        .status(404)
+        .json({ message: "No se encontró la fila con el godId especificado." });
+    }
   } catch (error) {
     console.error("Error al eliminar la fila:", error);
     res.status(500).json({ message: "Error interno del servidor." });
