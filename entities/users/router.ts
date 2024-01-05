@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import { authMiddleware } from "../../middlewares/authMiddleware";
 import {
+  deleteCounterGod,
   deleteListCounter,
   getAllCreatedListsCounters,
   getListById,
