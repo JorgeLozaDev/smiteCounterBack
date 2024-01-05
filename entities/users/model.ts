@@ -12,6 +12,23 @@ const counterpickSchema = new mongoose.Schema({
   },
 });
 
+const createdListSchema = new mongoose.Schema({
+  listName: {
+    type: String,
+    required: true,
+  },
+  mainGods: [
+    {
+      godId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'God',
+        required: true,
+      },
+      counterpicks: [counterpickSchema],
+    },
+  ],
+});
+
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -46,20 +63,7 @@ const userSchema = new mongoose.Schema({
       ref: "God",
     },
   ],
-  createdLists: [
-    {
-      listName: {
-        type: String,
-        required: true,
-      },
-      mainGod: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "God",
-        required: true,
-      },
-      counterpicks: [counterpickSchema],
-    },
-  ],
+  createdLists: [createdListSchema],
 });
 
 const User = mongoose.model("User", userSchema);
