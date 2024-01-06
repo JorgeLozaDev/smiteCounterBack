@@ -387,7 +387,6 @@ export const deleteCounterGod = async (
 ) => {
   try {
     const { godId } = req.body;
-    console.log(godId);
 
     // Verificar si el godId es válido (puedes agregar más validaciones según tus necesidades)
     if (!godId) {
