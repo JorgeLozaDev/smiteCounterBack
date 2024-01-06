@@ -1,4 +1,4 @@
-# SteamChat
+# Smite counters
 
 Este es el backend de muestro proyecto de smite counters, se encargará de manejar la información necesaria para neustra web
 
