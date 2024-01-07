@@ -411,3 +411,32 @@ export const deleteCounterGod = async (
     res.status(500).json({ message: "Error interno del servidor." });
   }
 };
+
+export const getAdminMainList = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    // Obtén al usuario administrador
+    const adminUser = await User.findOne({ role: "admin" });
+
+    // Verifica si se encontró al usuario administrador
+    if (!adminUser) {
+      return res.status(404).json({ message: "No se encontró al usuario administrador." });
+    }
+
+    // Busca la lista llamada "principal" en las listas creadas por el administrador
+    const mainList = adminUser.createdLists.find((list) => list.listName.toLowerCase() === "principal");
+
+    if (!mainList) {
+      return res.status(404).json({ message: "No se encontró la lista principal para el administrador." });
+    }
+
+    res.status(200).json(mainList);
+  } catch (error) {
+    console.error("Error al obtener la lista principal del administrador:", error);
+    res.status(500).json({ message: "Error interno del servidor." });
+  }
+};
+
