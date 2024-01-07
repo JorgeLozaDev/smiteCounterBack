@@ -8,6 +8,7 @@ import {
   validateRequiredFields,
   validateDateAndAge,
 } from "../../core/helpers/comun";
+import God from "../gods/model";
 
 export const singIn = async (
   req: Request,
@@ -393,11 +394,11 @@ export const deleteCounterGod = async (
       return res.status(400).json({ message: "El godId es obligatorio." });
     }
 
-  // Eliminar el subdocumento de la lista
-  const result = await User.updateOne(
-    { "createdLists.mainGods.godId": godId },
-    { $pull: { "createdLists.$.mainGods": { godId } } }
-  );
+    // Eliminar el subdocumento de la lista
+    const result = await User.updateOne(
+      { "createdLists.mainGods.godId": godId },
+      { $pull: { "createdLists.$.mainGods": { godId } } }
+    );
 
     if (result.modifiedCount > 0) {
       res.status(200).json({ message: "Fila eliminada exitosamente." });
@@ -423,20 +424,55 @@ export const getAdminMainList = async (
 
     // Verifica si se encontró al usuario administrador
     if (!adminUser) {
-      return res.status(404).json({ message: "No se encontró al usuario administrador." });
+      return res
+        .status(404)
+        .json({ message: "No se encontró al usuario administrador." });
     }
 
     // Busca la lista llamada "principal" en las listas creadas por el administrador
-    const mainList = adminUser.createdLists.find((list) => list.listName.toLowerCase() === "principal");
+    const mainList = adminUser.createdLists.find(
+      (list) => list.listName.toLowerCase() === "principal"
+    );
 
     if (!mainList) {
-      return res.status(404).json({ message: "No se encontró la lista principal para el administrador." });
+      return res
+        .status(404)
+        .json({
+          message: "No se encontró la lista principal para el administrador.",
+        });
     }
 
-    res.status(200).json(mainList);
+    // Obtener detalles del dios para cada elemento en la lista
+    const detailedList = await Promise.all(
+      mainList.mainGods.map(async (item) => {
+        const godDetails = await God.findById(item.godId).select(
+          "name images.card pantheon"
+        );
+        const counterpicksDetails = await Promise.all(
+          item.counterpicks.map(async (counterpick) => {
+            const counterpickDetails = await God.findById(
+              counterpick.godId
+            ).select("name images.card pantheon");
+            return {
+              ...counterpick.toObject(),
+              godDetails: counterpickDetails,
+            };
+          })
+        );
+        return {
+          ...item.toObject(),
+          godDetails,
+          counterpicks: counterpicksDetails,
+        };
+      })
+    );
+
+    res.status(200).json(detailedList);
   } catch (error) {
-    console.error("Error al obtener la lista principal del administrador:", error);
+    console.error(
+      "Error al obtener la lista principal del administrador:",
+      error
+    );
     res.status(500).json({ message: "Error interno del servidor." });
   }
 };
-
