@@ -446,13 +446,13 @@ export const getAdminMainList = async (
     const detailedList = await Promise.all(
       mainList.mainGods.map(async (item) => {
         const godDetails = await God.findById(item.godId).select(
-          "name images.card pantheon"
+          "name images.card pantheon role"
         );
         const counterpicksDetails = await Promise.all(
           item.counterpicks.map(async (counterpick) => {
             const counterpickDetails = await God.findById(
               counterpick.godId
-            ).select("name images.card pantheon");
+            ).select("name images.card pantheon ");
             return {
               ...counterpick.toObject(),
               godDetails: counterpickDetails,
