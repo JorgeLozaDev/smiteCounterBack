@@ -12,6 +12,7 @@ import {
   saveListCounter,
   singIn,
   updateProfile,
+  updateUserStatusActive,
 } from "./controller";
 
 const router = express.Router();
@@ -26,6 +27,7 @@ router.get("/counters", getAdminMainList);
 router.put("/updateProfile", authMiddleware, updateProfile);
 router.delete("/deleteCounterGod/", authMiddleware, deleteCounterGod);
 
+router.put("/updateUserActive/:id", authMiddleware, updateUserStatusActive);
 router.get("/getList/:id", authMiddleware, getListById);
 router.delete("/deleteListCounter/:id", authMiddleware, deleteListCounter);
 
