@@ -435,11 +435,9 @@ export const getAdminMainList = async (
     );
 
     if (!mainList) {
-      return res
-        .status(404)
-        .json({
-          message: "No se encontró la lista principal para el administrador.",
-        });
+      return res.status(404).json({
+        message: "No se encontró la lista principal para el administrador.",
+      });
     }
 
     // Obtener detalles del dios para cada elemento en la lista
@@ -474,5 +472,26 @@ export const getAdminMainList = async (
       error
     );
     res.status(500).json({ message: "Error interno del servidor." });
+  }
+};
+
+export const getAllUsers = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    // Verifica si el usuario es administrador
+    if (!req.user || req.user.role !== "admin") {
+      return res.status(403).json({ message: "Acceso no autorizado" });
+    }
+
+    // Si es administrador, obtén la información de todos los usuarios
+    const users = await User.find({}, "email"); // Solo obtén el campo 'email'
+
+    res.json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error interno del servidor" });
   }
 };

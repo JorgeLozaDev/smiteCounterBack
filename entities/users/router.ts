@@ -5,6 +5,7 @@ import {
   deleteListCounter,
   getAdminMainList,
   getAllCreatedListsCounters,
+  getAllUsers,
   getListById,
   getProfile,
   loginUser,
@@ -19,6 +20,7 @@ router.post("/addUser", singIn);
 router.post("/login", loginUser);
 router.post("/saveListCounter", authMiddleware, saveListCounter);
 router.get("/getListCounter", authMiddleware, getAllCreatedListsCounters);
+router.get("/getUsers", authMiddleware, getAllUsers);
 router.get("/profile", authMiddleware, getProfile);
 router.get("/counters", getAdminMainList);
 router.put("/updateProfile", authMiddleware, updateProfile);
