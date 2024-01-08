@@ -527,3 +527,33 @@ export const updateUserStatusActive = async (
       .json({ message: "Error interno del servidor", error });
   }
 };
+
+export const userDetails = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    // Verifica si el usuario es administrador
+    if (!req.user || req.user.role !== "admin") {
+      return res.status(403).json({ message: "Acceso no autorizado" });
+    }
+
+    const userId = req.params.id;
+
+    // Busca el usuario por ID y selecciona los campos deseados
+    const user = await User.findById(
+      userId,
+      "username email role isActive birthday"
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
